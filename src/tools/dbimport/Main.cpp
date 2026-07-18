@@ -115,7 +115,11 @@ bool StartDB()
     loader
         .AddDatabase(LoginDatabase, "Login")
         .AddDatabase(CharacterDatabase, "Character")
-        .AddDatabase(WorldDatabase, "World");
+        .AddDatabase(WorldDatabase, "World")
+#if MOD_PLAYERBOTS
+        .AddDatabase(PlayerbotsDatabase, "Playerbots")
+#endif
+        ;
 
     if (!loader.Load())
         return false;
