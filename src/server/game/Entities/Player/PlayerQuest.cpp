@@ -44,6 +44,7 @@ void Player::PrepareQuestMenu(ObjectGuid guid)
 
     // pets also can have quests
     Creature* creature = ObjectAccessor::GetCreatureOrPetOrVehicle(*this, guid);
+    WorldObject* questGiver = creature;
     if (creature)
     {
         objectQR  = sObjectMgr->GetCreatureQuestRelationBounds(creature->GetEntry());
@@ -60,6 +61,7 @@ void Player::PrepareQuestMenu(ObjectGuid guid)
         {
             objectQR  = sObjectMgr->GetGOQuestRelationBounds(pGameObject->GetEntry());
             objectQIR = sObjectMgr->GetGOQuestInvolvedRelationBounds(pGameObject->GetEntry());
+            questGiver = pGameObject;
         }
         else
             return;
@@ -71,6 +73,7 @@ void Player::PrepareQuestMenu(ObjectGuid guid)
     for (QuestRelations::const_iterator i = objectQIR.first; i != objectQIR.second; ++i)
     {
         uint32 quest_id = i->second;
+        sScriptMgr->OnBeforeCheckQuestMenuItem(this, questGiver, quest_id);
         QuestStatus status = GetQuestStatus(quest_id);
         if (status == QUEST_STATUS_COMPLETE)
             qm.AddMenuItem(quest_id, 4);
@@ -83,6 +86,7 @@ void Player::PrepareQuestMenu(ObjectGuid guid)
     for (QuestRelations::const_iterator i = objectQR.first; i != objectQR.second; ++i)
     {
         uint32 quest_id = i->second;
+        sScriptMgr->OnBeforeCheckQuestMenuItem(this, questGiver, quest_id);
         Quest const* quest = sObjectMgr->GetQuestTemplate(quest_id);
         if (!quest)
             continue;
@@ -252,6 +256,7 @@ bool Player::CanSeeStartQuest(Quest const* quest)
 bool Player::CanTakeQuest(Quest const* quest, bool msg)
 {
     return !sDisableMgr->IsDisabledFor(DISABLE_TYPE_QUEST, quest->GetQuestId(), this)
+           && sScriptMgr->OnBeforeCanTakeQuest(this, quest)
            && SatisfyQuestStatus(quest, msg) && SatisfyQuestExclusiveGroup(quest, msg)
            && SatisfyQuestClass(quest, msg) && SatisfyQuestRace(quest, msg) && SatisfyQuestLevel(quest, msg)
            && SatisfyQuestSkill(quest, msg) && SatisfyQuestReputation(quest, msg)
@@ -386,6 +391,11 @@ bool Player::CanCompleteRepeatableQuest(Quest const* quest)
 
 bool Player::CanRewardQuest(Quest const* quest, bool msg)
 {
+    if (!sScriptMgr->OnBeforeCanRewardQuest(this, quest))
+    {
+        return false;
+    }
+
     // not auto complete quest and not completed quest (only cheating case, then ignore without message)
     if (!quest->IsDFQuest() && !quest->IsAutoComplete() && quest->GetQuestMethod() && GetQuestStatus(quest->GetQuestId()) != QUEST_STATUS_COMPLETE)
         return false;

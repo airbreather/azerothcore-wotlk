@@ -954,6 +954,31 @@ void ScriptMgr::OnPlayerBeforeGetLevelForXPGain(Player const* player, uint8& lev
     level = std::clamp(level, uint8(1), uint8(sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL)));
 }
 
+bool ScriptMgr::OnBeforePlayerLearnSpell(Player* player, uint32 spellId)
+{
+    CALL_ENABLED_BOOLEAN_HOOKS(PlayerScript, PLAYERHOOK_ON_BEFORE_PLAYER_LEARN_SPELL, !script->OnBeforePlayerLearnSpell(player, spellId));
+}
+
+void ScriptMgr::OnBeforePlayerSendSpellListToTrainer(Player* player, Creature* npc, WorldPackets::NPC::TrainerList& trainerList)
+{
+    CALL_ENABLED_HOOKS(PlayerScript, PLAYERHOOK_ON_BEFORE_PLAYER_SEND_SPELL_LIST_TO_TRAINER, script->OnBeforePlayerSendSpellListToTrainer(player, npc, trainerList));
+}
+
+bool ScriptMgr::OnBeforeCanTakeQuest(Player* player, Quest const* quest)
+{
+    CALL_ENABLED_BOOLEAN_HOOKS(PlayerScript, PLAYERHOOK_ON_BEFORE_CAN_TAKE_QUEST, !script->OnBeforeCanTakeQuest(player, quest));
+}
+
+bool ScriptMgr::OnBeforeCanRewardQuest(Player* player, Quest const* quest)
+{
+    CALL_ENABLED_BOOLEAN_HOOKS(PlayerScript, PLAYERHOOK_ON_BEFORE_CAN_REWARD_QUEST, !script->OnBeforeCanRewardQuest(player, quest));
+}
+
+void ScriptMgr::OnBeforeCheckQuestMenuItem(Player* player, WorldObject* questGiver, uint32& questId)
+{
+    CALL_ENABLED_HOOKS(PlayerScript, PLAYERHOOK_ON_BEFORE_CHECK_QUEST_MENU_ITEM, script->OnBeforeCheckQuestMenuItem(player, questGiver, questId));
+}
+
 PlayerScript::PlayerScript(char const* name, std::vector<uint16> enabledHooks)
     : ScriptObject(name, PLAYERHOOK_END)
 {
