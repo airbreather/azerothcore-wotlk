@@ -1648,6 +1648,7 @@ public:
     [[nodiscard]] RewardedQuestSet const& getRewardedQuests() const { return m_RewardedQuests; }
     QuestStatusMap& getQuestStatusMap() { return m_QuestStatus; }
     QuestStatusSaveMap& GetQuestStatusSaveMap() { return m_QuestStatusSave; }
+    void SendQuestGiverStatusMultiple();
 
     [[nodiscard]] std::size_t GetRewardedQuestCount() const { return m_RewardedQuests.size(); }
     [[nodiscard]] bool IsQuestRewarded(uint32 quest_id) const
@@ -2860,7 +2861,6 @@ protected:
 
     RewardedQuestSet m_RewardedQuests;
     QuestStatusSaveMap m_RewardedQuestsSave;
-    void SendQuestGiverStatusMultiple();
 
     SkillStatusMap mSkillStatus;
 
