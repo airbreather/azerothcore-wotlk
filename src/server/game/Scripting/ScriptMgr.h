@@ -96,6 +96,11 @@ namespace Acore::ChatCommands
     struct ChatCommandBuilder;
 }
 
+namespace WorldPackets::NPC
+{
+    class TrainerList;
+}
+
 // Check out our guide on how to create new hooks in our wiki! https://www.azerothcore.org/wiki/hooks-script
 /*
     TODO: Add more script type classes.
@@ -471,6 +476,11 @@ public: /* PlayerScript */
     void OnPlayerGetReputationPriceDiscount(Player const* player, FactionTemplateEntry const* factionTemplate, float& discount);
     void OnPlayerLearnTaxiNode(Player const* player, uint32 nodeId);
     void OnPlayerBeforeGetLevelForXPGain(Player const* player, uint8& level);
+    bool OnBeforePlayerLearnSpell(Player* player, uint32 spellId);
+    void OnBeforePlayerSendSpellListToTrainer(Player* player, Creature* creature, WorldPackets::NPC::TrainerList& trainerList);
+    bool OnBeforeCanTakeQuest(Player* player, Quest const* quest);
+    bool OnBeforeCanRewardQuest(Player* player, Quest const* quest);
+    void OnBeforeCheckQuestMenuItem(Player* player, WorldObject* questGiver, uint32& questId);
 
     // Anti cheat
     void AnticheatSetCanFlybyServer(Player* player, bool apply);
